@@ -1,0 +1,14 @@
+# OS junk
+.DS_Store
+
+# Private files
+logins.txt
+
+# IDE junk
+.idea/
+
+# venv
+.venv/
+
+# Python stuff
+__pycache__/
