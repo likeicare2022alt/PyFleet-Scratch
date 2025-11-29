@@ -9,6 +9,7 @@ from rich.console import Console
 from typing import Optional
 import json
 from scratchattach.utils.exceptions import ProjectNotFound
+import os
 
 warnings.filterwarnings('ignore',
                         category=scratch.LoginDataWarning)  # Makes the LoginDataWarning from scratchattach not show
@@ -21,7 +22,9 @@ moderator = pipeline("text-classification", model="unitary/toxic-bert")  # Moder
 PROJECT = data["TARGET"]
 PROMPT = data["PROMPT"]
 
-client = InferenceClient()
+client = InferenceClient(
+    api_key=os.environ.get("HF_API_KEY")
+)
 console = Console(force_terminal=True)
 DEBUG = data["DEBUG"]
 LOGS = data["LOGS"]
