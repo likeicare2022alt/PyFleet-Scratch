@@ -1,6 +1,6 @@
 {
     "PROMPT": "A user named %u has posted a comment that says this \"%c\", respond to it as if you were british",
-    "DEBUG": true,
+    "DEBUG": false,
     "LOGS": true,
     "TARGET": 1206423208
 }
