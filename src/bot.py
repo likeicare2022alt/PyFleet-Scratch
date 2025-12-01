@@ -10,6 +10,7 @@ from typing import Optional
 import json
 from scratchattach.utils.exceptions import ProjectNotFound
 import os
+import html
 
 warnings.filterwarnings('ignore',
                         category=scratch.LoginDataWarning)  # Makes the LoginDataWarning from scratchattach not show
@@ -136,7 +137,7 @@ def bot(username, password, stop_event):
 
             try:
                 response = generate(
-                    PROMPT.replace("%c", comment).replace("%u", comment_object.author_name)
+                    PROMPT.replace("%c", html.unescape(comment).strip()).replace("%u", comment_object.author_name)
                 ).content
             except HfHubHTTPError:
                 mprint(

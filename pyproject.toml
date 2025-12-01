@@ -1,6 +1,6 @@
 [project]
 name = "pyfleetscratch"
-version = "0.1.0"
+version = "0.4.2"
 description = "CLI for botting scratch"
 requires-python = ">=3.12"
 dependencies = [
