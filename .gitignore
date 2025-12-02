@@ -11,4 +11,4 @@
 __pycache__/
 
 # Private files
-src/preferences.json
+src/config.json

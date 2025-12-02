@@ -14,7 +14,7 @@ import html
 
 warnings.filterwarnings('ignore',
                         category=scratch.LoginDataWarning)  # Makes the LoginDataWarning from scratchattach not show
-with open("preferences.json", 'r') as f:
+with open("config.json", 'r') as f:
     data = json.load(f)
 
 
@@ -37,7 +37,7 @@ def get_new_values():
     :return:
     """
     global PROJECT, PROMPT, DEBUG, LOGS, data
-    with open("preferences.json", 'r') as file:
+    with open("config.json", 'r') as file:
         data = json.load(file)
 
     DEBUG = data["DEBUG"]

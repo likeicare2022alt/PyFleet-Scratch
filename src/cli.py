@@ -21,8 +21,8 @@ console = Console()
 __preferences = {"PROMPT": "PROMPT", "DEBUG": True, "LOGS": True, "TARGET": 1, "BOT TYPE": "MANUAL", "OUTPUTS": [],
                  "BOTS": []}
 
-if not os.path.exists("preferences.json"):
-    with open('preferences.json', 'w') as f:
+if not os.path.exists("config.json"):
+    with open('config.json', 'w') as f:
         json.dump(__preferences, f)
 
 
@@ -39,10 +39,14 @@ wait(1)
 def main():
     try:
         def check_bots():
+            """
+            Checks the bots for moderation that has affected them
+            :return:
+            """
             _options = ["CHECK LOADED BOTS", "CANCEL"]
             _choice = curses.wrapper(lambda stdscr: choice(stdscr, _options, menu="CHECK BOTS:"))
             if _choice == "CHECK LOADED BOTS":
-                with open("preferences.json", 'r') as file:
+                with open("config.json", 'r') as file:
                     _preferences = json.load(file)
                     logins = _preferences["BOTS"]
 
@@ -53,6 +57,10 @@ def main():
             clear()
 
         def fire_bots():
+            """
+            Runs the loaded bots
+            :return:
+            """
             _options = ["FIRE LOADED BOTS", "CANCEL"]
             _choice = curses.wrapper(lambda stdscr: choice(stdscr, _options, menu="FIRE BOTS:"))
 
@@ -61,7 +69,7 @@ def main():
                     "THE BOTS WILL START IN [bold white]5[/bold white] SECONDS\n[bold green]>TO STOP BOTS PRESS ENTER<[/bold green]"
                 )
                 wait(5)
-                with open("preferences.json", 'r') as file:
+                with open("config.json", 'r') as file:
                     _preferences = json.load(file)
                     logins = _preferences["BOTS"]
                     bot_type = _preferences["BOT TYPE"]
@@ -95,6 +103,10 @@ def main():
                 return
 
         def load_bots():
+            """
+            Loads bot credentials into preferences.json
+            :return:
+            """
             _options = ["ADD BOTS", "CANCEL"]
             _choice = curses.wrapper(lambda stdscr: choice(stdscr, _options, menu="LOAD BOTS:"))
             if _choice == "ADD BOTS":
@@ -110,7 +122,7 @@ def main():
                     return
 
                 credentials = [username, password]
-                with open("preferences.json", 'r+') as file:
+                with open("config.json", 'r+') as file:
                     _preferences = json.load(file)
                     _preferences["BOTS"].append(credentials)
                     file.seek(0)
@@ -121,10 +133,14 @@ def main():
                 return
 
         def preferences():
+            """
+            Changes the contents of preferences.json
+            :return:
+            """
             _options = ["DEBUG", "LOGS", "TARGET", "PROMPT", "BOT TYPE", "OUTPUTS", "CANCEL"]
             _choice = curses.wrapper(lambda stdscr: choice(stdscr, _options, menu="PREFERENCES:"))
 
-            with open("preferences.json", 'r') as file:
+            with open("config.json", 'r') as file:
                 _preferences = json.load(file)
 
             match _choice:
@@ -172,12 +188,21 @@ def main():
                 case "CANCEL":
                     return
 
-            with open("preferences.json", 'w') as file:
+            with open("config.json", 'w') as file:
                 json.dump(_preferences, file, indent=4)
             clear()
 
         def choice(stdscr, choices, _banner: Optional[str] = banner, menu: Optional[str] = "MENU:",
                    info: Optional[str] = ""):
+            """
+            This function creates a terminal menu for this CLI
+            :param stdscr:
+            :param choices:
+            :param _banner:
+            :param menu:
+            :param info:
+            :return:
+            """
             curses.curs_set(0)
             stdscr.keypad(True)
             curses.start_color()
@@ -223,6 +248,10 @@ def main():
                     return choices[current]
 
         def cli():
+            """
+            This just gets the selected option then runs the corresponding function
+            :return:
+            """
             _options = ["LOAD BOTS", "FIRE BOTS", "PREFERENCES", "CHECK BOTS", "EXIT"]
             while True:
                 _choice = curses.wrapper(lambda stdscr: choice(stdscr, _options))
