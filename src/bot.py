@@ -9,7 +9,6 @@ from rich.console import Console
 from typing import Optional
 import json
 from scratchattach.utils.exceptions import ProjectNotFound
-import os
 import html
 
 warnings.filterwarnings('ignore',
@@ -22,13 +21,10 @@ moderator = pipeline("text-classification", model="unitary/toxic-bert")  # Moder
 
 PROJECT = data["TARGET"]
 PROMPT = data["PROMPT"]
-
-client = InferenceClient(
-    api_key=os.environ.get("HF_API_KEY")
-)
 console = Console(force_terminal=True)
 DEBUG = data["DEBUG"]
 LOGS = data["LOGS"]
+API_KEY = data["API KEY"]
 
 
 def get_new_values():
@@ -36,7 +32,7 @@ def get_new_values():
     Gets the new values from preferences.json and sets the variables to those values
     :return:
     """
-    global PROJECT, PROMPT, DEBUG, LOGS, data
+    global PROJECT, PROMPT, DEBUG, LOGS, API_KEY, data
     with open("config.json", 'r') as file:
         data = json.load(file)
 
@@ -44,6 +40,11 @@ def get_new_values():
     LOGS = data["LOGS"]
     PROJECT = data["TARGET"]
     PROMPT = data["PROMPT"]
+    API_KEY = data["API KEY"]
+
+
+def client():
+    return InferenceClient(api_key=API_KEY)
 
 
 def moderate(text: str) -> bool:
@@ -84,7 +85,7 @@ def generate(content: str):
     :return:
     """
 
-    return client.chat.completions.create(
+    return client().chat.completions.create(
         model="meta-llama/Llama-3.1-8B-Instruct",
         messages=[
             {
