@@ -97,6 +97,7 @@ def main():
                     thread.join()
 
                 console.print("[bold green]>ALL BOTS HAVE STOPPED<[/bold green]")
+                stop_event.clear()
                 wait(1)
                 clear()
             else:
