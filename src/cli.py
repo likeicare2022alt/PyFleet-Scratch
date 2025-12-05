@@ -13,6 +13,8 @@ from ban_check import check
 from scratchattach import login as __login
 from scratchattach.utils.exceptions import LoginFailure
 from manual_bot import manual_bot
+from control_bots import connect, post
+from tqdm import tqdm
 
 banner: str = pyfiglet.figlet_format("PyFleet Scratch", font="slant")
 threads = []
@@ -38,6 +40,33 @@ wait(1)
 
 def main():
     try:
+        def control_bots():
+            """
+            Function that allows you to control the bots
+            :return:
+            """
+            objects = []
+
+            with open("config.json", 'r') as file:
+                data = json.load(file)
+                logins = data["BOTS"]
+                project = data["TARGET"]
+
+            for _login in logins:
+                objects.append(connect(_login[0], _login[1], project))
+
+            while True:
+                message = input("POST (TYPE \"EXIT\" TO EXIT): ")
+                if not message == "EXIT":
+                    for _object in objects:
+                        post(_object, message)
+                    print("COOLDOWN")
+                    for _ in tqdm(range(30)):
+                        wait(1)
+                else:
+                    clear()
+                    return
+
         def check_bots():
             """
             Checks the bots for moderation that has affected them
@@ -269,7 +298,7 @@ def main():
                     case "EXIT":
                         exit()
 
-            _options = ["LOAD BOTS", "FIRE BOTS", "PREFERENCES", "CHECK BOTS", "EXIT"]
+            _options = ["LOAD BOTS", "FIRE BOTS", "PREFERENCES", "CHECK BOTS", "CONTROL BOTS", "EXIT"]
             while True:
                 _choice = curses.wrapper(lambda stdscr: choice(stdscr, _options))
                 match _choice:
@@ -281,6 +310,8 @@ def main():
                         preferences()
                     case "CHECK BOTS":
                         check_bots()
+                    case "CONTROL BOTS":
+                        control_bots()
                     case "EXIT":
                         exit()
 
