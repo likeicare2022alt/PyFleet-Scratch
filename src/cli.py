@@ -1,7 +1,5 @@
-print("INITIALIZING...")
-
+print("INITIALIZING PyFleet Scratch")
 import pyfiglet
-from bot import bot
 import json
 import threading
 from time import sleep as wait
@@ -12,9 +10,12 @@ import os
 from ban_check import check
 from scratchattach import login as __login
 from scratchattach.utils.exceptions import LoginFailure
+from tqdm import tqdm
+print("\nINITIALIZING BOT SCRIPTS")
 from manual_bot import manual_bot
 from control_bots import connect, post
-from tqdm import tqdm
+print("INITIALIZING PyTorch")
+from bot import bot
 
 banner: str = pyfiglet.figlet_format("PyFleet Scratch", font="slant")
 threads = []
