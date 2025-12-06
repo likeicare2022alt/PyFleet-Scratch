@@ -21,7 +21,7 @@ threads = []
 stop_event = threading.Event()
 console = Console()
 __preferences = {"PROMPT": "PROMPT", "DEBUG": True, "LOGS": True, "TARGET": 1, "BOT TYPE": "MANUAL", "OUTPUTS": [],
-                 "BOTS": [], "API KEY": ""}
+                 "BOTS": [], "API KEY": "", "RATELIMIT": 30}
 
 if not os.path.exists("config.json"):
     with open('config.json', 'w') as f:
@@ -167,7 +167,7 @@ def main():
             Changes the contents of preferences.json
             :return:
             """
-            _options = ["DEBUG", "LOGS", "TARGET", "PROMPT", "BOT TYPE", "OUTPUTS", "CANCEL"]
+            _options = ["DEBUG", "LOGS", "TARGET", "PROMPT", "BOT TYPE", "OUTPUTS", "RATELIMIT", "CANCEL"]
             _choice = curses.wrapper(lambda stdscr: choice(stdscr, _options, menu="PREFERENCES:"))
 
             with open("config.json", 'r') as file:
@@ -214,7 +214,13 @@ def main():
                     _choice = input("ENTER AN OUTPUT FOR THE MANUAL BOT (TYPE CANCEL TO CANCEL): ")
                     if not _choice == "CANCEL":
                         _preferences["OUTPUTS"].append(_choice)
-
+                case "RATELIMIT":
+                    print(f"CURRENT VALUE: {_preferences["RATELIMIT"]}")
+                    _choice = input("ENTER AMOUNT OF SECONDS FOR BOT TO PAUSE: ")
+                    try:
+                        _preferences["RATELIMIT"] = int(_choice)
+                    except ValueError:
+                        print("INVALID INTEGER")
                 case "CANCEL":
                     return
 

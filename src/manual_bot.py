@@ -19,6 +19,7 @@ console = Console(force_terminal=True)
 DEBUG = data["DEBUG"]
 LOGS = data["LOGS"]
 OUTPUTS = data["OUTPUTS"]
+RATELIMIT = data["RATELIMIT"]
 
 
 def get_new_values():
@@ -26,7 +27,7 @@ def get_new_values():
     Gets the new values from preferences.json and sets the variables to those values
     :return:
     """
-    global PROJECT, PROMPT, DEBUG, LOGS, OUTPUTS, data
+    global PROJECT, PROMPT, DEBUG, LOGS, OUTPUTS, RATELIMIT, data
     with open("config.json", 'r') as file:
         data = json.load(file)
 
@@ -35,6 +36,7 @@ def get_new_values():
     PROJECT = data["TARGET"]
     PROMPT = data["PROMPT"]
     OUTPUTS = data["OUTPUTS"]
+    RATELIMIT = data["RATELIMIT"]
 
 
 def mprint(*text, _type: Optional[str] = "DEBUG"):
@@ -102,7 +104,7 @@ def manual_bot(username: str, password: str, stop_event):
                     _type="WARNING"
                 )
 
-            for _ in range(30):  # Checks for the thread stop event while waiting
+            for _ in range(RATELIMIT):  # Checks for the thread stop event while waiting
                 if stop_event.is_set():
                     return
                 time.sleep(1)  # Makes sure messages don't count as spam

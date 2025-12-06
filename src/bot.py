@@ -26,6 +26,7 @@ console = Console(force_terminal=True)
 DEBUG = data["DEBUG"]
 LOGS = data["LOGS"]
 API_KEY = data["API KEY"]
+RATELIMIT = data["RATELIMIT"]
 
 
 def get_new_values():
@@ -33,7 +34,7 @@ def get_new_values():
     Gets the new values from preferences.json and sets the variables to those values
     :return:
     """
-    global PROJECT, PROMPT, DEBUG, LOGS, API_KEY, data
+    global PROJECT, PROMPT, DEBUG, LOGS, API_KEY, RATELIMIT, data
     with open("config.json", 'r') as file:
         data = json.load(file)
 
@@ -42,6 +43,7 @@ def get_new_values():
     PROJECT = data["TARGET"]
     PROMPT = data["PROMPT"]
     API_KEY = data["API KEY"]
+    RATELIMIT = data["RATELIMIT"]
 
 
 def client():
@@ -178,7 +180,7 @@ def bot(username, password, stop_event):
                         _type="WARNING"
                     )
 
-            for _ in range(30):
+            for _ in range(RATELIMIT):
                 if stop_event.is_set():
                     return
                 time.sleep(1)  # Makes sure messages don't count as spam
