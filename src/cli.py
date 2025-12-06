@@ -15,6 +15,7 @@ print("\nINITIALIZING BOT SCRIPTS")
 from manual_bot import manual_bot
 from control_bots import connect, post
 from bot import bot
+print("INITIALIZED")
 
 banner: str = pyfiglet.figlet_format("PyFleet Scratch", font="slant")
 threads = []
@@ -72,6 +73,8 @@ def main():
             Checks the bots for moderation that has affected them
             :return:
             """
+            global threads
+
             _options = ["CHECK LOADED BOTS", "CANCEL"]
             _choice = curses.wrapper(lambda stdscr: choice(stdscr, _options, menu="CHECK BOTS:"))
             if _choice == "CHECK LOADED BOTS":
@@ -82,7 +85,13 @@ def main():
                 for _login in logins:
                     thread = threading.Thread(target=check, args=(_login[0], _login[1]))
                     thread.start()
+                    threads.append(thread)
+
+                for thread in threads:
+                    thread.join()
+
                 input("PRESS 'ENTER' TO CONTINUE\n")
+                threads = []
             clear()
 
         def fire_bots():
@@ -90,6 +99,8 @@ def main():
             Runs the loaded bots
             :return:
             """
+            global threads
+
             _options = ["FIRE LOADED BOTS", "CANCEL"]
             _choice = curses.wrapper(lambda stdscr: choice(stdscr, _options, menu="FIRE BOTS:"))
 
@@ -126,6 +137,7 @@ def main():
                     thread.join()
 
                 console.print("[bold green]>ALL BOTS HAVE STOPPED<[/bold green]")
+                threads = []
                 stop_event.clear()
                 wait(1)
                 clear()
