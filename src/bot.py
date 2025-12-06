@@ -2,7 +2,6 @@ import scratchattach as scratch
 from huggingface_hub import InferenceClient
 import warnings
 import time
-from transformers import pipeline
 from scratchattach.utils.exceptions import CommentPostFailure
 from huggingface_hub.utils import HfHubHTTPError
 from rich.console import Console
@@ -10,6 +9,8 @@ from typing import Optional
 import json
 from scratchattach.utils.exceptions import ProjectNotFound
 import html
+print("INITIALIZING PyTorch")
+from transformers import pipeline
 
 warnings.filterwarnings('ignore',
                         category=scratch.LoginDataWarning)  # Makes the LoginDataWarning from scratchattach not show

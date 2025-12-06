@@ -14,7 +14,6 @@ from tqdm import tqdm
 print("\nINITIALIZING BOT SCRIPTS")
 from manual_bot import manual_bot
 from control_bots import connect, post
-print("INITIALIZING PyTorch")
 from bot import bot
 
 banner: str = pyfiglet.figlet_format("PyFleet Scratch", font="slant")
