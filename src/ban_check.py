@@ -13,5 +13,6 @@ def check(username, password):
             console.print(f"[bold orange1]{username} has been muted[/bold orange1]")
         else:
             console.print(f"[bold green]{username} has not been affected by any moderation[/bold green]")
+            return [username, password]
     except LoginFailure:
         console.print(f"[bold red]{username} has been banned[/bold red]")

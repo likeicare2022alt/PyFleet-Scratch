@@ -11,24 +11,33 @@ from ban_check import check
 from scratchattach import login as __login
 from scratchattach.utils.exceptions import LoginFailure
 from tqdm import tqdm
-
-print("\nINITIALIZING BOT SCRIPTS")
+import csv
+from pathlib import Path
+import queue
+print("INITIALIZING BOT SCRIPTS")
 from manual_bot import manual_bot
 from control_bots import connect, post
 from bot import bot
-
 print("INITIALIZED")
-
+# The banner for the CLI
 banner: str = pyfiglet.figlet_format("PyFleet Scratch", font="slant")
+# Stores threads to detect when all threads have stopped
 threads = []
 stop_event = threading.Event()
 console = Console()
+# The default contents for 'config.json'
 __preferences = {"PROMPT": "PROMPT", "DEBUG": True, "LOGS": True, "TARGET": 1, "BOT TYPE": "MANUAL", "OUTPUTS": [],
                  "BOTS": [], "API KEY": "", "RATELIMIT": 30}
 
+# Create queue to hold results
+q = queue.Queue()
+
+# Check if 'config.json' exists, if not it creates one
 if not os.path.exists("config.json"):
     with open('config.json', 'w') as f:
-        json.dump(__preferences, f)
+        json.dump(__preferences, f, indent=2)
+
+print("INITIALIZED")
 
 
 def clear():
@@ -36,8 +45,12 @@ def clear():
     print(banner)
 
 
-clear()
+def worker(username, password):
+    result = check(username, password)
+    q.put(result)
 
+
+clear()
 wait(1)
 
 
@@ -55,12 +68,14 @@ def main():
                 logins = data["BOTS"]
                 project = data["TARGET"]
 
-            for _login in logins:
-                objects.append(connect(_login[0], _login[1], project))
+            for username, password in tqdm(logins, desc="INITIALIZING BOTS", unit=" BOTS"):
+                objects.append(connect(username, password, project))
+
+            print("BOTS HAVE SUCCESSFULLY STARTED")
 
             while True:
-                message = input("POST (TYPE \"EXIT\" TO EXIT): ")
-                if not message == "EXIT":
+                message = input("POST (ENTER NOTHING TO END SESSION): ")
+                if message != "":
                     for _object in objects:
                         post(_object, message)
                     print("COOLDOWN")
@@ -79,19 +94,31 @@ def main():
 
             _options = ["CHECK LOADED BOTS", "CANCEL"]
             _choice = curses.wrapper(lambda stdscr: choice(stdscr, _options, menu="CHECK BOTS:"))
+            results = []
             if _choice == "CHECK LOADED BOTS":
                 with open("config.json", 'r') as file:
                     _preferences = json.load(file)
                     logins = _preferences["BOTS"]
 
                 for _login in logins:
-                    thread = threading.Thread(target=check, args=(_login[0], _login[1]))
+                    thread = threading.Thread(target=worker, args=(_login[0], _login[1]))
                     thread.start()
                     threads.append(thread)
 
                 for thread in threads:
                     thread.join()
 
+                while not q.empty():
+                    results.append(q.get())
+                # Filters the logins
+                cleaned = [x for x in results if x is not None]
+                existing = [acc for acc in cleaned if acc in logins]
+                # Deletes accounts that have been banned
+                with open("config.json", 'w') as file:
+                    _preferences["BOTS"] = existing
+                    json.dump(_preferences, file, indent=2)
+
+                print(f"YOU HAVE {len(existing)} BOTS")
                 input("PRESS 'ENTER' TO CONTINUE\n")
                 threads = []
             clear()
@@ -154,24 +181,57 @@ def main():
             _options = ["ADD BOTS", "CANCEL"]
             _choice = curses.wrapper(lambda stdscr: choice(stdscr, _options, menu="LOAD BOTS:"))
             if _choice == "ADD BOTS":
-                username = input("USERNAME: ")
-                password = input("PASSWORD: ")
+                _options = ["ENTER THROUGH INPUTS", "UPLOAD CSV"]
+                _choice = curses.wrapper(lambda stdscr: choice(stdscr, _options, menu="LOAD BOTS:"))
 
-                try:
-                    __login(username, password)
-                except LoginFailure:
-                    print("INVALID ACCOUNT CREDENTIALS")
-                    wait(1)
-                    clear()
-                    return
+                if _choice == "UPLOAD CSV":
+                    try:
+                        _path = input("ENTER A FILE PATH: ")
+                        path = Path(_path).expanduser()
 
-                credentials = [username, password]
-                with open("config.json", 'r+') as file:
-                    _preferences = json.load(file)
-                    _preferences["BOTS"].append(credentials)
-                    file.seek(0)
-                    json.dump(_preferences, file, indent=4)
-                    file.truncate()
+                        with path.open(newline='') as file:
+                            reader = csv.reader(file)
+                            print("CHECKING ACCOUNTS")
+
+                            for row in reader:
+                                username, password = row[0], row[1]
+                                try:
+                                    __login(username, password)
+
+                                    with open("config.json", 'r') as _file:
+                                        data = json.load(_file)
+
+                                    existing_usernames = {_bot[0] for _bot in data.get("BOTS", [])}
+                                    if username not in existing_usernames:
+                                        data["BOTS"].append(row)
+
+                                        with open("config.json", 'w') as _file:
+                                            json.dump(data, _file, indent=2)
+
+                                    else:
+                                        print(f"SKIPPING DUPLICATE")
+
+                                except LoginFailure:
+                                    print(f"FAILED TO LOGIN TO {username}")
+                                    wait(1)
+
+                    except FileNotFoundError:
+                        print("FILE DOES NOT EXIST")
+                else:
+                    username = input("USERNAME: ")
+                    password = input("PASSWORD: ")
+                    credentials = [username, password]
+                    print("CHECKING ACCOUNT")
+                    try:
+                        __login(username, password)
+                        with open("config.json", 'r') as _file:
+                            data = json.load(_file)
+                        with open("config.json", 'w') as _file:
+                            data["BOTS"].append(credentials)
+                            json.dump(data, _file, indent=2)
+                    except LoginFailure:
+                        print("FAILED TO LOGIN")
+                wait(1)
                 clear()
             else:
                 return
@@ -195,6 +255,7 @@ def main():
                     if _choice == "CANCEL":
                         return
                     _preferences["DEBUG"] = True if _choice == "True" else False
+
                 case "LOGS":
                     _options = ["True", "False", "CANCEL"]
                     info = f"\nCURRENT VALUE: {_preferences["LOGS"]}"
@@ -202,20 +263,24 @@ def main():
                     if _choice == "CANCEL":
                         return
                     _preferences["LOGS"] = True if _choice == "True" else False
+
                 case "TARGET":
                     try:
                         print(f"CURRENT VALUE: {_preferences["TARGET"]}")
-                        _choice = int(input("ENTER A PROJECT ID: "))
+                        _choice = int(input("ENTER A PROJECT ID (ENTER NOTHING TO CANCEL): "))
                     except ValueError:
                         print("NOT A VALID INTEGER")
                         return
-                    _preferences["TARGET"] = _choice
+                    if _choice != "":
+                        _preferences["TARGET"] = _choice
 
                 case "PROMPT":
                     print(f"CURRENT VALUE: {_preferences["PROMPT"]}")
-                    _choice = input("ENTER THE AI's PROMPT (USE %u FOR USERNAME AND %c FOR COMMENT): ")
-                    if not _choice == "CANCEL":
+                    _choice = input(
+                        "ENTER THE AI's PROMPT (USE %u FOR USERNAME AND %c FOR COMMENT, ENTER NOTHING TO CANCEL): ")
+                    if _choice != "":
                         _preferences["PROMPT"] = _choice
+
                 case "BOT TYPE":
                     _options = ["AI", "MANUAL", "CANCEL"]
                     info = f"\nCURRENT VALUE: {_preferences["BOT TYPE"]}"
@@ -223,18 +288,22 @@ def main():
                     if _choice == "CANCEL":
                         return
                     _preferences["BOT TYPE"] = _choice
+
                 case "OUTPUTS":
                     print(f"CURRENT VALUE: {_preferences["OUTPUTS"]}")
-                    _choice = input("ENTER AN OUTPUT FOR THE MANUAL BOT (TYPE CANCEL TO CANCEL): ")
-                    if not _choice == "CANCEL":
+                    _choice = input("ENTER AN OUTPUT FOR THE MANUAL BOT (ENTER NOTHING TO CANCEL): ")
+                    if _choice != "":
                         _preferences["OUTPUTS"].append(_choice)
+
                 case "RATELIMIT":
                     print(f"CURRENT VALUE: {_preferences["RATELIMIT"]}")
-                    _choice = input("ENTER AMOUNT OF SECONDS FOR BOT TO PAUSE: ")
+                    _choice = input("ENTER AMOUNT OF SECONDS FOR BOT TO PAUSE (ENTER NOTHING TO CANCEL): ")
                     try:
-                        _preferences["RATELIMIT"] = int(_choice)
+                        if _choice != "":
+                            _preferences["RATELIMIT"] = int(_choice)
                     except ValueError:
                         print("INVALID INTEGER")
+
                 case "CANCEL":
                     return
 
@@ -309,10 +378,11 @@ def main():
                 _choice = curses.wrapper(lambda stdscr: choice(stdscr, _options, menu="SETUP:"))
                 match _choice:
                     case "ENTER HUGGINGFACE API KEY":
-                        key = input("API KEY: ")
-                        data["API KEY"] = key
-                        with open("config.json", 'w') as file:
-                            json.dump(data, file, indent=4)
+                        key = input("API KEY (ENTER NOTHING TO CANCEL): ")
+                        if key != "":
+                            data["API KEY"] = key
+                            with open("config.json", 'w') as file:
+                                json.dump(data, file, indent=2)
                     case "SKIP":
                         pass
                     case "EXIT":
