@@ -1,4 +1,8 @@
 # PyFleet Scratch
+> [!WARNING]
+> Use a VPN and an email faker, you can get IP banned from using this\
+> I reccomend [Proton VPN](https://protonvpn.com/) because it's free and [FakeMail](https://www.fakemail.net/)
+
 PyFleet Scratch is a CLI that allows you to flood the comments of scratch, (you do need a Huggingface [access token](https://huggingface.co/docs/hub/security-tokens), they are free, there is a version that doesn't require AI, just go to preferences, select bot type, and set it to manual, then add comment outputs by going to preferences, outputs)
 
 ## Setup
