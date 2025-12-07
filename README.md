@@ -28,3 +28,12 @@ That will install all packages listed in the `uv.lock` file.
 ## Start the Program
 To start the program make sure you have **all** required packages installed for windows users install `windows-curses`\
 Now once everything is done, use the `uv run cli.py` command inside of `PyFleet-Scratch/src/`
+
+## Formatting a CSV File
+When uploading a CSV file filled with accounts you need to format it like this
+```text
+username,password
+username,password
+username,password
+```
+Then you can upload it
