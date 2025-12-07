@@ -1,7 +1,7 @@
 # PyFleet Scratch
 > [!WARNING]
 > Use a VPN and an email faker, you can get IP banned and email banned from using this\
-> I recommend [Proton VPN](https://protonvpn.com/) because it's free and [FakeMail](https://www.fakemail.net/)
+> I recommend [Proton VPN](https://protonvpn.com/) and [FakeMail](https://www.fakemail.net/) because they're both free
 
 PyFleet Scratch is a CLI that allows you to flood the comments of scratch
 
