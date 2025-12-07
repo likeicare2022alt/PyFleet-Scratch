@@ -11,10 +11,10 @@ PyFleet Scratch is a CLI that allows you to flood the comments of scratch
 ## Setup
 > [!NOTE]
 > Requires python 3.12.x because of PyTorch\
-> Make sure you have [uv](https://docs.astral.sh/uv/) installed, you need it to run this project
+> Make sure you have [uv](https://docs.astral.sh/uv/#installation) installed, you need it to run this project
 
 ### Unix
-First you need to clone this repo, once that's done, go to the `PyFleetScratch` folder and run `uv sync` (install uv [here](https://docs.astral.sh/uv/#installation)).\
+First you need to clone this repo, once that's done, go to the `PyFleetScratch` folder and run `uv sync`.\
 That will install all packages listed in the `uv.lock` file.\
 Now to activate the venv, run `source .venv/bin/activate`.
 ### Windows
@@ -22,7 +22,7 @@ Now to activate the venv, run `source .venv/bin/activate`.
 > You must install and additional package called `windows-curses`\
 > To install, use `uv add windows-curses`
 
-First you need to clone this repo, once that's done, go to the `PyFleetScratch` folder and run `uv sync` (install uv [here](https://docs.astral.sh/uv/#__tabbed_1_2)).\
+First you need to clone this repo, once that's done, go to the `PyFleetScratch` folder and run `uv sync`.\
 That will install all packages listed in the `uv.lock` file.
 
 ## Start the Program
