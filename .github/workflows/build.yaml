@@ -14,8 +14,22 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Nuitka
-        run: pip install nuitka
+      - name: Install dependencies
+        run: |
+          pip install nuitka
+          pip install windows-curses
+
+      - name: Ensure executables directory exists
+        run: |
+          if (-Not (Test-Path PyFleetScratch/executables)) { mkdir PyFleetScratch/executables }
+
+      - name: Install Dependency Walker
+        run: |
+          $url = "https://dependencywalker.com/depends22_x64.zip"
+          $zip = "$env:USERPROFILE\\depends.zip"
+          $out = "$env:LOCALAPPDATA\\Nuitka\\Nuitka\\Cache\\downloads\\depends\\x86_64"
+          Invoke-WebRequest -Uri $url -OutFile $zip
+          Expand-Archive $zip -DestinationPath $out -Force
 
       - name: Build Windows executable
         run: python -m nuitka --standalone --jobs=8 --output-dir=PyFleetScratch/executables --output-filename=pyfleetscratch.exe src/pyfleetscratch.py
@@ -37,8 +51,11 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Nuitka
+      - name: Install dependencies
         run: pip install nuitka
+
+      - name: Ensure executables directory exists
+        run: mkdir -p PyFleetScratch/executables
 
       - name: Build macOS executable
         run: python -m nuitka --standalone --jobs=8 --output-dir=PyFleetScratch/executables --output-filename=pyfleetscratch.bin src/pyfleetscratch.py
