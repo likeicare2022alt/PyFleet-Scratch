@@ -8,6 +8,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          lfs: true   # ensure Git LFS is available
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,17 +36,21 @@ jobs:
       - name: Build Windows executable
         run: python -m nuitka --standalone --jobs=8 --output-dir=PyFleetScratch/executables --output-filename=pyfleetscratch.exe src/pyfleetscratch.py
 
-      - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: pyfleetscratch-exe
-          path: PyFleetScratch/executables/
+      - name: Commit executables back to repo
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add PyFleetScratch/executables/*
+          git commit -m "Add Windows executable"
+          git push
 
   build-macos:
     runs-on: macos-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          lfs: true   # ensure Git LFS is available
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -60,8 +66,10 @@ jobs:
       - name: Build macOS executable
         run: python -m nuitka --standalone --jobs=8 --output-dir=PyFleetScratch/executables --output-filename=pyfleetscratch.bin src/pyfleetscratch.py
 
-      - name: Upload macOS artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: pyfleetscratch-bin
-          path: PyFleetScratch/executables/
+      - name: Commit executables back to repo
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add PyFleetScratch/executables/*
+          git commit -m "Add macOS executable"
+          git push
