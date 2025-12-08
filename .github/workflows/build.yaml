@@ -89,11 +89,13 @@ jobs:
           name: macos-bundle
           path: executables/macos
 
+      - name: Debug artifact paths
+        run: ls -R executables
+
       - name: Commit executables back to repo
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f executables/windows/pyfleetscratch.dist
-          git add -f executables/macos/pyfleetscratch.dist
+          git add -f executables/
           git commit -m "Add Windows and macOS standalone bundles"
           git push
