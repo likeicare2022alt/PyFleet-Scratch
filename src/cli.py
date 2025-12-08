@@ -1,4 +1,3 @@
-print("INITIALIZING PyFleet Scratch")
 import pyfiglet
 import json
 import threading
@@ -25,17 +24,8 @@ banner: str = pyfiglet.figlet_format("PyFleet Scratch", font="slant")
 threads = []
 stop_event = threading.Event()
 console = Console()
-# The default contents for 'config.json'
-__preferences = {"PROMPT": "PROMPT", "DEBUG": True, "LOGS": True, "TARGET": 1, "BOT TYPE": "MANUAL", "OUTPUTS": [],
-                 "BOTS": [], "API KEY": "", "RATELIMIT": 30}
-
 # Create queue to hold results
 q = queue.Queue()
-
-# Check if 'config.json' exists, if not it creates one
-if not os.path.exists("config.json"):
-    with open('config.json', 'w') as f:
-        json.dump(__preferences, f, indent=2)
 
 print("INITIALIZED")
 
@@ -408,7 +398,3 @@ def main():
         cli()
     except KeyboardInterrupt:
         return
-
-
-if __name__ == "__main__":
-    main()
