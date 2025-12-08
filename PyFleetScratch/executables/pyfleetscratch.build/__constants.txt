@@ -1,0 +1,43 @@
+{
+  "__bytecode.const": {
+    "blob_name": ".bytecode",
+    "blob_size": 5761173,
+    "input_size": 5783639
+  },
+  "__constants.const": {
+    "blob_name": "",
+    "blob_size": 866,
+    "input_size": 2220
+  },
+  "module.__main__.const": {
+    "blob_name": "__main__",
+    "blob_size": 350,
+    "input_size": 662
+  },
+  "module.ban_check.const": {
+    "blob_name": "ban_check",
+    "blob_size": 459,
+    "input_size": 808
+  },
+  "module.bot.const": {
+    "blob_name": "bot",
+    "blob_size": 2637,
+    "input_size": 4560
+  },
+  "module.cli.const": {
+    "blob_name": "cli",
+    "blob_size": 5026,
+    "input_size": 7617
+  },
+  "module.control_bots.const": {
+    "blob_name": "control_bots",
+    "blob_size": 351,
+    "input_size": 657
+  },
+  "module.manual_bot.const": {
+    "blob_name": "manual_bot",
+    "blob_size": 1590,
+    "input_size": 2780
+  },
+  "total": 1013
+}
