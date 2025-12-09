@@ -19,7 +19,7 @@ jobs:
 
       - name: Install dependencies (Windows)
         run: |
-          pip install nuitka
+          pip install -r requirements.txt
           pip install windows-curses
 
       - name: Ensure executables dir
@@ -55,7 +55,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies (macOS x86)
-        run: pip install nuitka
+        run: pip install -r requirements.txt
 
       - name: Ensure executables dir
         run: mkdir -p executables/macos/x86
@@ -87,7 +87,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies (macOS arm64)
-        run: pip install nuitka
+        run: pip install -r requirements.txt
 
       - name: Ensure executables dir
         run: mkdir -p executables/macos/arm
