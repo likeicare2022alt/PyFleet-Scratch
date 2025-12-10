@@ -43,4 +43,4 @@ jobs:
       # Replace 'your_script_name.py' with the actual path to your file
       - name: Run Python script
         run: |
-          python your_script_name.py ${{ github.event.inputs.script_arg }}
+          python src/pyfleetscratch.py ${{ github.event.inputs.script_arg }}
