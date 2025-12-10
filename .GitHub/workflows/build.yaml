@@ -1,0 +1,46 @@
+name: Manual Python Script Runner
+
+# This workflow can be triggered manually from the GitHub Actions UI.
+on:
+  workflow_dispatch:
+    inputs:
+      # Optional input field if your script needs a specific argument
+      script_arg:
+        description: 'Optional argument for the Python script'
+        required: false
+        default: ''
+
+jobs:
+  build-and-run:
+    # Run on a fresh virtual environment
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code
+      - name: Check out repository
+        uses: actions/checkout@v4
+        
+      # Step 2: Set up Python environment
+      # This example uses Python 3.11; adjust the version as needed
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' 
+
+      # Step 3: Install dependencies from requirements.txt
+      # Assumes you have a requirements.txt file in your root directory
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Check if requirements.txt exists before installing
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "No requirements.txt found, skipping dependency installation."
+          fi
+
+      # Step 4: Run your Python file
+      # Replace 'your_script_name.py' with the actual path to your file
+      - name: Run Python script
+        run: |
+          python your_script_name.py ${{ github.event.inputs.script_arg }}
